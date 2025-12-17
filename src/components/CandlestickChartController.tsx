@@ -19,6 +19,7 @@ import { DataViewerColorsType } from "../types/DataViewerColorsType";
 import { DataViewerTextsType } from "../types/DataViewerTextsType";
 import { ColorsActionType, ColorsType } from "../types/ColorsType";
 import { useColorsDispatch } from "../context/ColorsContext";
+import SMAType from "../types/SMAType";
 
 const CandlestickChartController: React.FC<{
   chartData: any;
@@ -28,6 +29,7 @@ const CandlestickChartController: React.FC<{
   decimal: number;
   dataViewerTexts: DataViewerTextsType;
   dataViewerColors: DataViewerColorsType;
+  sma: SMAType;
   scrollZoom: {
     enable: boolean;
     max: number;
@@ -51,6 +53,7 @@ const CandlestickChartController: React.FC<{
   decimal,
   dataViewerTexts,
   dataViewerColors,
+  sma,
   scrollZoom,
   rangeSelector,
   responsiveBreakPoint,
@@ -156,6 +159,7 @@ const CandlestickChartController: React.FC<{
             id={candlesCanvasId}
             xScaleFunction={xScaleFunction}
             yScaleFunction={yScaleFunction}
+            sma={sma}
           />
         </foreignObject>
       }

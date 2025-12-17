@@ -147,6 +147,29 @@ default value :
 responsiveBreakPoint?: number; // default value = 400 (px)
 ```
 
+### sma? - optional
+
+Display a Simple Moving Average (SMA) line overlay on top of the candles.
+
+The SMA `period` is derived from the candles currently displayed (visible range) to avoid mismatches:
+
+`period = clamp(round(visibleCandles * value), min, min(max, visibleCandles))`
+
+```javascript
+sma?: {
+  enable?: boolean; // default value = false
+  source?: "close" | "open" | "high" | "low"; // default value = "close"
+  period?: {
+    mode: "visibleRatio"; // currently the only supported mode
+    value: number; // default value = 0.1 (10% of visible candles)
+    min?: number; // default value = 5
+    max?: number; // default value = 200
+  };
+  stroke?: string; // default value = RSChartStroke from ColorPalette
+  strokeWidth?: number; // default value = 2
+};
+```
+
 ### enableResetButton? - optional
 
 ```javascript

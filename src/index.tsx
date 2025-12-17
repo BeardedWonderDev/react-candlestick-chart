@@ -7,6 +7,7 @@ import { ConfigDataProvider } from "./context/ConfigtDataContext";
 import { DataViewerAndSelectorsProvider } from "./context/DataViewerAndSelectorsContext";
 import { ColorsProvider } from "./context/ColorsContext";
 import CandlestickChartController from "./components/CandlestickChartController";
+import SMAType from "./types/SMAType";
 
 const CandlestickChart: React.FC<{
   data: any;
@@ -31,6 +32,7 @@ const CandlestickChart: React.FC<{
   enableResetButton?: boolean;
   responsiveBreakPoint?: number;
   ColorPalette?: ColorsPropType;
+  sma?: SMAType;
 }> = ({
   data,
   id,
@@ -44,6 +46,7 @@ const CandlestickChart: React.FC<{
   responsiveBreakPoint,
   enableResetButton = true,
   ColorPalette,
+  sma,
 }) => {
   return (
     <DataProvider>
@@ -57,6 +60,18 @@ const CandlestickChart: React.FC<{
               height={height}
               decimal={decimal ?? 0}
               responsiveBreakPoint={responsiveBreakPoint ?? 400}
+              sma={{
+                enable: sma?.enable ?? false,
+                source: sma?.source ?? "close",
+                period: {
+                  mode: "visibleRatio",
+                  value: sma?.period?.value ?? 0.1,
+                  min: sma?.period?.min ?? 5,
+                  max: sma?.period?.max ?? 200,
+                },
+                stroke: sma?.stroke,
+                strokeWidth: sma?.strokeWidth,
+              }}
               scrollZoom={{
                 enable: scrollZoom ? scrollZoom.enable : false,
                 max: scrollZoom ? scrollZoom.max : 1,
