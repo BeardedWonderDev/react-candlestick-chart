@@ -27,6 +27,7 @@ const react_1 = __importStar(require("react"));
 const ConfigtDataContext_1 = require("../context/ConfigtDataContext");
 const DataContext_1 = require("../context/DataContext");
 const ColorsContext_1 = require("../context/ColorsContext");
+const sma_1 = require("../utils/sma");
 const CandlesCanvas = ({ id, xScaleFunction, yScaleFunction, sma }) => {
     var _a, _b, _c;
     const config = (0, ConfigtDataContext_1.useConfigData)();
@@ -114,57 +115,6 @@ const CandlesCanvas = ({ id, xScaleFunction, yScaleFunction, sma }) => {
             }
         }
     };
-    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-    const getSMAValueSource = (candle, source) => {
-        switch (source) {
-            case "open":
-                return candle.open;
-            case "high":
-                return candle.high;
-            case "low":
-                return candle.low;
-            case "close":
-            default:
-                return candle.close;
-        }
-    };
-    const deriveSMAPeriod = (visibleCount) => {
-        var _a, _b, _c;
-        const ratioInput = (_a = sma.period) === null || _a === void 0 ? void 0 : _a.value;
-        const ratio = typeof ratioInput === "number" && Number.isFinite(ratioInput) && ratioInput > 0
-            ? ratioInput
-            : 0.1;
-        const minInput = (_b = sma.period) === null || _b === void 0 ? void 0 : _b.min;
-        const maxInput = (_c = sma.period) === null || _c === void 0 ? void 0 : _c.max;
-        const minPeriod = typeof minInput === "number" && Number.isFinite(minInput) && minInput >= 1
-            ? Math.floor(minInput)
-            : 5;
-        const maxPeriod = typeof maxInput === "number" && Number.isFinite(maxInput) && maxInput >= 1
-            ? Math.floor(maxInput)
-            : 200;
-        if (visibleCount <= 0)
-            return 0;
-        const unclamped = Math.round(visibleCount * ratio);
-        const upperBound = Math.min(Math.max(maxPeriod, 1), visibleCount);
-        const effectiveMin = Math.min(Math.max(minPeriod, 1), upperBound);
-        return clamp(unclamped, effectiveMin, upperBound);
-    };
-    const computeSMA = (values, period) => {
-        if (period <= 0)
-            return values.map(() => null);
-        if (period === 1)
-            return values.map((v) => v);
-        const result = new Array(values.length).fill(null);
-        let sum = 0;
-        for (let i = 0; i < values.length; i++) {
-            sum += values[i];
-            if (i >= period)
-                sum -= values[i - period];
-            if (i >= period - 1)
-                result[i] = sum / period;
-        }
-        return result;
-    };
     const drawSMA = (ctx) => {
         var _a, _b, _c;
         if (!sma.enable)
@@ -173,12 +123,12 @@ const CandlesCanvas = ({ id, xScaleFunction, yScaleFunction, sma }) => {
             return;
         if (!xScaleFunction || !yScaleFunction)
             return;
-        const period = deriveSMAPeriod(data.shownData.length);
+        const period = (0, sma_1.deriveSMAPeriod)(data.shownData.length, sma.period);
         if (period < 2)
             return;
         const source = (_a = sma.source) !== null && _a !== void 0 ? _a : "close";
-        const values = data.shownData.map((c) => getSMAValueSource(c, source));
-        const smaValues = computeSMA(values, period);
+        const values = (0, sma_1.getSMAValues)(data.shownData, source);
+        const smaValues = (0, sma_1.computeSMA)(values, period);
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
         ctx.beginPath();
         let started = false;
